@@ -1,0 +1,228 @@
+---
+title: "Test 1 CheatSheet"
+author: "Robert Stroud"
+date: "9/25/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Chapter 2
+
+Installation: Most packages are not installed by default when you install R and RStudio. You need to install a package before you can use it. Once you’ve installed it, you likely don’t need to install it again unless you want to update it to a newer version of the package.
+
+Loading: Packages are not loaded automatically when you open RStudio. You need to load them every time you open RStudio using the library() command.
+
+Package Installation:
+Easy way: In the Files pane of RStudio:
+Click on the “Packages” tab
+Click on “Install”
+Type the name of the package under “Packages (separate multiple with space or comma):” In this case, type ggplot2
+Click “Install”
+
+Alternative way: In the Console pane run install.packages("ggplot2") (you must include the quotation marks).
+
+Use the library() function to load any packages. 
+
+When exploring Data Frames there are a few options. 
+-View() - default
+-glimpse() - dplyr package
+-kable() - knitr package
+-and the $ operator which will allow me to view a single variable. 
+
+##Chapter 3
+
+Example of a Scatterplot in r:
+
+ggplot(data = all_alaska_flights, mapping = aes(x = dep_delay, y = arr_delay)) + 
+  geom_point()
+  
+Within the ggplot() function call, we specify two of the components of the grammar:
+The data frame to be all_alaska_flights by setting data = all_alaska_flights
+The aesthetic mapping by setting aes(x = dep_delay, y = arr_delay). Specifically
+the variable dep_delay maps to the x position aesthetic
+the variable arr_delay maps to the y position aesthetic
+We add a layer to the ggplot() function call using the + sign. The layer in question specifies the third component of the grammar: the geometric object. In this case the geometric object are points, set by specifying geom_point().
+Some notes on layers:
+
+Note that the + sign comes at the end of lines, and not at the beginning. You’ll get an error in R if you put it at the beginning.
+When adding layers to a plot, you are encouraged to hit Return on your keyboard after entering the + so that the code for each layer is on a new line. As we add more and more layers to plots, you’ll see this will greatly improve the legibility of your code.
+To stress the importance of adding layers, in particular the layer specifying the geometric object, consider Figure 3.3 where no layers are added. A not very useful plot!
+  
+Example of a LineGraph in r:
+
+ggplot(data = early_january_weather, mapping = aes(x = time_hour, y = temp)) +
+  geom_line()
+  
+Within the ggplot() function call, we specify two of the components of the grammar:
+The data frame to be early_january_weather by setting data = early_january_weather
+The aesthetic mapping by setting aes(x = time_hour, y = temp). Specifically
+time_hour (i.e. the time variable) maps to the x position
+temp maps to the y position
+We add a layer to the ggplot() function call using the + sign
+The layer in question specifies the third component of the grammar: the geometric object in question. In this case the geometric object is a line, set by specifying geom_line().
+
+Example of a Histogram in r:
+
+ggplot(data = weather, mapping = aes(x = temp)) +
+  geom_histogram()
+  
+There is only one variable being mapped in aes(): the single numerical variable temp. You don’t need to compute the y-aesthetic: it gets computed automatically.
+We set the geometric object to be geom_histogram()
+We got a warning message of 1 rows containing non-finite values being removed. This is due to one of the values of temperature being missing. R is alerting us that this happened.
+Another warning corresponds to an urge to specify the number of bins you’d like to create.
+
+We can adjust characteristics of the bins in one of two ways:
+
+By adjusting the number of bins via the bins argument
+By adjusting the width of the bins via the binwidth argument
+First, we have the power to specify how many bins we would like to put the data into as an argument in the geom_histogram() function. By default, this is chosen to be 30 somewhat arbitrarily; we have received a warning above our plot that this was done.
+
+ggplot(data = weather, mapping = aes(x = temp)) +
+  geom_histogram(bins = 60, color = "white")
+  
+Faceting:
+
+Before continuing the 5NG, we briefly introduce a new concept called faceting. Faceting is used when we’d like to create small multiples of the same plot over a different categorical variable. By default, all of the small multiples will have the same vertical axis.
+
+For example, suppose we were interested in looking at how the temperature histograms we saw in Chapter 3.5 varied by month. This is what is meant by “the distribution of a variable over another variable”: temp is one variable and month is the other variable. In order to look at histograms of temp for each month, we add a layer facet_wrap(~ month). You can also specify how many rows you’d like the small multiple plots to be in using nrow or how many columns using ncol inside of facet_wrap.
+
+ggplot(data = weather, mapping = aes(x = temp)) +
+  geom_histogram(binwidth = 5, color = "white") +
+  facet_wrap(~ month, nrow = 4)
+  
+Example of a Boxplot in r:
+
+ggplot(data = weather, mapping = aes(x = month, y = temp)) +
+  geom_boxplot()
+  
+The “box” portions of this plot represent the 25th percentile AKA the 1st quartile, the median AKA the 50th percentile AKA the 2nd quartile, and the 75th percentile AKA the 3rd quartile.
+The height of each box, i.e. the value of the 3rd quartile minus the value of the 1st quartile, is called the interquartile range ( 
+IQR ). It is a measure of spread of the middle 50% of values, with longer boxes indicating more variability.
+The “whisker” portions of these plots extend out from the bottoms and tops of the boxes and represent points less than the 25th percentile and greater than the 75th percentiles respectively. They’re set to extend out no more than  
+1.5×IQR units away from either end of the boxes. We say “no more than” because the ends of the whiskers represent the first observed values of temp to be within the range of the whiskers. The length of these whiskers show how the data outside the middle 50% of values vary, with longer whiskers indicating more variability.
+The dots representing values falling outside the whiskers are called outliers. It is important to keep in mind that the definition of an outlier is somewhat arbitrary and not absolute. In this case, they are defined by the length of the whiskers, which are no more than  
+1.5×IQR units long.
+
+Example of Barplot in r:
+
+ggplot(data = fruits, mapping = aes(x = fruit)) +
+  geom_bar()
+ggplot(data = fruits_counted, mapping = aes(x = fruit, y = number)) +
+  geom_col()
+  
+When the categorical variable you want to plot is not pre-counted in your data frame you need to use geom_bar().
+When the categorical variable is pre-counted (in the above fruits_counted example in the variable number), you need to use geom_col() with the y aesthetic explicitly mapped.
+
+##Chapter 4
+
+The gather() function in the tidyr package can complete this task for us. The first argument to gather(), just as with ggplot2(), is the data argument where we specify which data frame we would like to tidy. The next two arguments to gather() are key and value, which specify what we’d like to call the new columns that convert our wide data into long format. Lastly, we include a specification for variables we’d like to NOT include in this tidying process using a -.
+
+guat_tidy <- gather(data = guat_dem, 
+                    key = year,
+                    value = democracy_score,
+                    - country) 
+
+Below an example is given showing how to join the airlines data frame together with the flights data frame by linking together the two datasets via a common key of "carrier". Note that this “joined” data frame is assigned to a new data frame called joined_flights. The key variable that we frequently join by is one of the identification variables mentioned above.
+
+library(dplyr)
+joined_flights <- inner_join(x = flights, y = airlines, by = "carrier")
+
+##Chapter 5
+
+he %>% operator allows us to go from one step in dplyr to the next easily so we can, for example:
+
+filter: our data frame to only focus on a few rows then
+group_by: another variable to create groups then
+summarize: this grouped data to calculate the mean for each level of the group.
+
+filter(): Pick rows based on conditions about their values
+
+ filter(origin == "JFK", (dest == "BTV" | dest == "SEA"), month >= 10)
+
+The double equal sign == for testing for equality, and not =. You are almost guaranteed to make the mistake at least once of only including one equals sign.
+You can combine multiple criteria together using operators that make comparisons:
+
+| corresponds to “or”
+& corresponds to “and”
+We can often skip the use of & and just separate our conditions with a comma. You’ll see this in the example below.
+
+In addition, you can use other mathematical checks (similar to ==):
+
+> corresponds to “greater than”
+< corresponds to “less than”
+>= corresponds to “greater than or equal to”
+<= corresponds to “less than or equal to”
+!= corresponds to “not equal to”
+
+summarize(): Compute summary measures known as “summary statistics” of variables
+
+ summarize(mean = mean(temp), std_dev = sd(temp))
+
+mean(): the mean AKA the average
+sd(): the standard deviation, which is a measure of spread
+min() and max(): the minimum and maximum values respectively
+IQR(): Interquartile range
+sum(): the sum
+n(): a count of the number of rows/observations in each group. This particular summary function will make more sense when group_by() is covered in Section 5.5.
+
+
+group_by(): Group rows of observations together
+
+group_by(month) %>% 
+  summarize(mean = mean(temp, na.rm = TRUE), 
+            std_dev = sd(temp, na.rm = TRUE))
+
+mutate(): Create a new variable in the data frame by mutating existing ones
+
+ mutate(gain = dep_delay - arr_delay)
+
+arrange(): Arrange/sort the rows based on one or more variables
+arrange(num_flights)
+arrange(desc(num_flights))
+
+join(): Join/merge two data frames by matching along a “key” variable. There are many different join()s available. Here, we will focus on the inner_join() function.
+
+flights_joined <- flights %>% 
+  inner_join(airlines, by = "carrier")
+  
+##Misc 
+
+sample(x, size, replace = FALSE, prob = NULL)
+
+Hypothesis Statement:
+
+$H_0: \mu_{AA} - \mu_{UA} = 0$
+No difference between mean delay times
+$H_A: \mu_{AA} - \mu_{UA} \neq 0$ 
+There is a difference.
+
+Simple Random Sampling Code with P-value calculation integrated in:
+
+sims <- 10^4 -1
+ans <- numeric(sims)
+for(i in 1:sims){
+  index <- sample(4029, 2906, replace = FALSE)
+  ans[i] <- mean(Delay[index]) - mean(Delay[-index])
+}
+
+Example of ScatterPlot with more complex options:
+
+ggplot(iris_small, aes(x=Petal.Length,
+ y=Petal.Width,
+ color=Species,
+ size=Sepal.Length)) +
+ geom_point()
+ 
+ Three S's:
+ Shape - General shape of graph
+ Center - the mean of the data
+ Spread - the standard deviation of the data
+ 
+ P-value:
+ The p-value is the level of marginal significance within a statistical hypothesis test representing the probability of the occurrence of a given event.
+ 

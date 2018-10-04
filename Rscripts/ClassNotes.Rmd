@@ -1,0 +1,149 @@
+---
+title: "ClassNotes"
+author: "Robert Stroud"
+date: "10/1/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Supervised Learning:
+y - repsonse, dependent 
+x - predictors, independent, inputs
+
+use a scatterplot to compare two numeric variables. 
+
+Describe three things
+
+Form - linear / non linear ex. 
+Direction - positive / negative
+Strength - Strong, moderate, weak ex. most subjective of the three. 
+
+When creating function to model some data, explanation and prediction are potential focuses. 
+Prediction is significantly more useful than explanation. 
+
+an estimation funciton will have a carat/hat above it. 
+ex. y = f(x) + Error, f(x) is the signal, error is the noise. 
+
+We want to minimize the noise. 
+
+Ei = y - f(x)
+
+wnat to minimize the sum of squares error. 
+
+f(x) = y = b_0 + b_1(X_i)
+b_0 - y intercept
+b_1 - slope 
+
+sum of squares = Sum of (y_i - b_0 - b_iX_i)^2
+
+take the derivative of above. 
+
+set it to zero
+solve for whatever term was used for derivative. 
+
+it ends up being in repsect to b_0
+b_0 = avg(y) - b_1*avg(x)
+b_1 = sum of (x_1 - avg(x))(y_i - avg(y)) / sum of (x_i - avg(x))^2
+
+these two equations result in the minimization of the sum of square eirs. 
+
+r - correlation coefficient 
+ -1 < r < 1
+ perfect negative relationship will be a -1. 
+ perfect postive relationship will be 1. 
+
+```{r}
+library(MASS)
+library(dplyr)
+library(ggplot2)
+?Boston
+##geom smooth used to give a linear model, lm stands for linear model. 
+## cor() is the method to find the correlation coefficient. 
+##lm(response ~ predictors, data = DF), this describe data, give intercpet and slope. 
+## sumamry of mod gives several values incuding r squared. taking the sqrt of that will give the correlation coeffiecient. 
+
+ggplot(Boston, aes(x = rm, y = medv)) + geom_point() + geom_smooth(method = "lm")
+cor(Boston$medv, Boston$rm)
+mod <- lm(medv ~ rm, data = Boston)
+mod
+summary(mod)
+summary(mod)$r.squared
+```
+
+imbedding this into an rmarkdown document is valuable. because
+```{r}
+library(ISLR)
+##regress balance, putting a one after the . will do regress over intercept. 
+mod2 <- lm(Balance~., data = Credit)
+```
+Putting the code in the document is preferred, so if the data changes the document will change dynamically. 
+
+The $R^2_{adj}=`r summary(mod2)$adj`$ 
+
+Backwards Elimination - regressing the response on to evey predictor. Then get rid of the variable that is the least significant, p-value / f-value. This process continues until all variables in the model are significant. 
+
+Forward Selection - start with one variable, create several regression models, then select the most significant. Then select another variable and create several 2-variable regression models and select the most significant, this continues. 
+
+```{r}
+##FORWARD selection model example. 
+##SCOPE selects all the variable that can be used in the test, add1 is the function used to test. 
+## looking at the f-value because of test = "F", and we are looking for the largest f value. 
+## choose the variable based on largest f-value and p-value.
+library(ISLR)
+mod.fs <- lm(Balance ~ 1, data = Credit)
+SCOPE <- (~Income + Limit + Rating + Cards + Age + Education + Gender + Student + Married + Ethnicity)
+add1(mod.fs, scope = SCOPE, test = "F")
+mod.fs <- update(mod.fs, .~. + Rating)
+add1(mod.fs, scope = SCOPE, test = "F")
+mod.fs <- update(mod.fs, .~. + Income)
+add1(mod.fs, scope = SCOPE, test = "F")
+mod.fs <- update(mod.fs, .~. + Student)
+add1(mod.fs, scope = SCOPE, test = "F")
+mod.fs <- update(mod.fs, .~. + Limit)
+add1(mod.fs, scope = SCOPE, test = "F")
+mod.fs <- update(mod.fs, .~. + Cards)
+add1(mod.fs, scope = SCOPE, test = "F")
+mod.fs <- update(mod.fs, .~. + Age)
+add1(mod.fs, scope = SCOPE, test = "F")
+summary(mod.fs)
+```
+
+Backward Elimination
+```{r}
+## using the dot says over the whole data frame, instead of just the intercept.
+##drop 1 used to test. 
+mod.be <- lm(Balance ~ ., data = Credit)
+drop1(mod.be, test = "F")
+mod.be <- update(mod.be, .~. - Education)
+drop1(mod.be, test = "F")
+mod.be <- update(mod.be, .~. - Ethnicity)
+drop1(mod.be, test = "F")
+mod.be <- update(mod.be, .~. - Married)
+drop1(mod.be, test = "F")
+mod.be <- update(mod.be, .~. - ID)
+drop1(mod.be, test = "F")
+mod.be <- update(mod.be, .~. - Gender)
+drop1(mod.be, test = "F")
+summary(mod.be)
+```
+
+All-in-One Function
+```{r}
+## the direction gives which type, forward means forward selction. 
+stepAIC(lm(Balance ~ 1, data = Credit), scope = SCOPE, 
+        direction = "forward", test = "F")
+
+null <- lm(Balance ~1, data = Credit)
+full <- lm(Balance ~ ., data = Credit)
+##forward selection
+stepAIC(null, scope = list(lower = null, upper = full),
+        direction = "forward", test = "F")
+##backward elimination
+stepAIC(full, scope = list(lower = null, upper = full),
+        direction = "backward", test = "F")
+```
