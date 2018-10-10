@@ -147,3 +147,30 @@ stepAIC(null, scope = list(lower = null, upper = full),
 stepAIC(full, scope = list(lower = null, upper = full),
         direction = "backward", test = "F")
 ```
+Standard Normal Score
+z Score = any statistic minus the mean of that statistic over the standard deviation. 
+t score 
+
+if you have a random variable with a distribution, provided n ~ sample size, is sufficiently large ~ depends on the sample, Xbar is the sample mean. distribution of Xbar has an approximate normal shape. If you have a uniform distribution, if you take a sufficiently large sample from it, and take the mean it will provide a bell curve.
+
+for the graph of z, there shouuld be alpa / 2 area in the tails, the area to the left is called z_alpha / 2 and the one to the right is z_1-alpha / 2.
+
+p is the cumalalitve districbution function. 
+q will give us the invverse cumalitive distribution funtion, 
+
+Confidence Interval of mew of probablity statment of pt estimate minus the margin of error, pt estimate plus the margin of error. 
+once computed the confience intervale talks about the percentage of the true mean is in the calculated range. 
+```{r}
+junk <- runif(10000, 0, 10)
+hist(junk)
+sims <- 10000
+xbar <- numeric(sims)
+for(i in 1:sims){
+  x <- runif(16, 0, 10)
+  xbar[i] <- mean(x)
+}
+hist(xbar)
+mean(xbar)
+sd(xbar)
+qnorm(.95)
+```
