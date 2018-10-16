@@ -174,3 +174,128 @@ mean(xbar)
 sd(xbar)
 qnorm(.95)
 ```
+
+WEEK 9
+In Class Problems:
+
+Bayes #1:
+
+Dans's Diner employes three dishwashers. Al washes 20% of the dishes and breaks only 1% of those he handles. Betty and Chuck each wash 40% of the dishes and betty breaks only 1% of hers and chuck breaks 5% of the dhises he washes. You go to Dans for supper one night and hear a dish break in the sink. Whats the probability that chuck is on the job.
+
+A = event Al is on the job
+p(A) = 0.20
+p(BD(A)) = 0.01
+p(~BD(A)) = 0.99
+A = 0.002
+~A = 0.198
+
+B = event Betty is on the job
+p(B) = 0.40
+p(BD(B)) = 0.01
+p(~BD(B)) = 0.99
+B = 0.004
+~B = 0.396
+
+C = event Chuck is on the job
+p(C) = 0.40
+p(BD(C)) = 0.05
+p(~BD(C)) - 0.95
+C = 0.02
+~C = 0.38
+
+p(BD(C)) = p(c&BD) / P(BD) = p(BD(C)) * P(c) / P(BD(C)) * P(C) + p(BD(B)) * P(B) + P(BD(A)) * P(A)
+P(BD(C)) = 0.2 / 0.02 + 0.004 + 0.002 = 0.769
+
+Bayes 2:
+Nicole is fliying from boston to denver with a connection in chigace. the probability that her flight levaves on time is 0.25. if the fligh is on time the probability that her luggage will make the connection flightis 0.85 but if the flight is delayed the probability that the luggage will make it is only 0.55
+
+Suppose you pick her up at the denver airpoirt with her luggage is ont there. What is the probabality that nicoles first flight was delayed. Ans = 0.9
+
+P(OT) = 0.25
+P(LA(OT)) = 0.85
+p(~LA(OT)) = 0.15
+
+P(~OT) = 0.75
+P(LA(~OT)) = 0.55
+p(~LA(~OT)) = 0.45
+
+P(~OT(~LA)) = P(~LA(~OT)) * P(~OT) / P(~LA(~OT)) * P(~OT) + P(~LA(OT)) * P(OT)
+P(~OT(~LA)) = (0.45)(0.75) / (0.45)(0.75) + (0.15)(0.25)
+P(~OT(~LA)) = 0.9
+
+Expected Values 1:
+You draw a card from a deck. If you get a red card, you win nothing. If you get a spade, you win $8. For any club, you get $20 plus an extra $40 for the ace of clubs.
+
+Create a probability model for the amount you win at this game.
+Find the expected amount you'll win. ($7.77)
+How much would you be willing to pay to play this game?
+
+P(0) = 26 / 52
+P(8) = 13 / 52
+p(20) = 12 / 52
+p(60) = 1 / 52
+
+e(x) = sum of(x * P(x =x)) = 0 * (26/52) + 8 * (13 / 52) + 20 (12 / 52) + 60 (1 / 52)
+
+for r:
+put each x into a seperate vector. 
+x for value
+px for probability
+then create a new vector with sum(X*Px)
+
+variation for discreate variable:
+V(x) = theta^2_x = sum of (x - e(x))^2 * P(X=x)
+
+for r(continued):
+vx <- sum((x-EX)^2 * px)
+SX <- sqrt(VX)
+
+Expected Value 2: 
+
+A couple plans to have children until they get a girl, but they agree they will not have more than three children, even if all are boys. Assume that the probability of having a girl is 53.00%.
+
+Create a probability model for the number of children they'll have.
+Find the expected number of children. (1.6909)
+Find the expected number of boys they'll have. (0.7947)
+
+p(b) = 0.47
+p(g) = 0.53
+
+(Use same rcode as #1 just substitue below values in)
+x = # of children
+x  P(x)
+1  0.53
+2  0.47 * 0.53
+3  0.47^3 + 0.47^2 * 0.53
+
+y = # of boys
+y  p(y)
+0 0.53
+1 0.47 * 0.53
+2 0.47^2 * 0.53
+3  0.47^3
+
+r:
+y <- 0:3
+py <- c(0.53, 0.47*0.53, 0.47^2*0.53, 0.47^3)
+EY <- sum(y * py)
+
+Standard Deviation 1: 
+
+You draw a card from a deck. If you get a red card, you win nothing. If you get a spade, you win $13. For any club, you win $26 plus an extra $15 for the ace of clubs. Find the standard deviation of the amount you might win drawing a card.
+
+The standard deviation is_____ ($11.39)
+
+
+```{r}
+x <- c(0, 13, 26, 41)
+px <- c(26/52, 13/52, 12/52, 1/52)
+EX <- sum(x*px)
+VX <- sum((x-EX)^2 * px)
+SX <- sqrt(VX)
+SX
+
+```
+
+
+
