@@ -297,5 +297,126 @@ SX
 
 ```
 
+Expected Value and Variance 1:
+
+An insurance policy costs $110 and will pay policyholders $9,000 if they suffer a major injury (resulting in hospitalization) or $2000 if they suffer a minor injury (resulting in lost time from work). The company estimates that 1 in every 2083 policyholders will suffer a major injury and that 1 in 495 will suffer a minor injury.
+
+Create a probability model for the profit on a policy.
+What's the company's expected profit on the policy? ($101.64)
+What's the standard deviation? ($216.5632)
+
+profit  p(profit)
+110     1 - (1/2083 + 1/495)
+-1890   1 / 495
+-8890   1 / 2083
+
+```{r}
+x <- c(110, -1890, -8890)
+px <- c(1 - (1/2083 + 1/495), 1/495, 1/2083)
+EX <- sum(x*px)
+VX <- sum((x - EX)^2 * px)
+SX <- sqrt(VX)
+EX
+SX
+```
+
+Coffee Problem:
+
+At a certain coffee shop, all the customers buy a cup of coffee and some also buy a doughnut. The shop owner believes that the number of cups he sells each day is normally distributed with a mean of 320 cups and a standard deviation of 22 cups. He also believes that the number of doughnuts he sells each day is independent of the coffee sales and is normally distributed with a mean of 160 doughnuts and a standard deviation of 16.
+
+The shop is open every day but Sunday. Assuming day-to-day sales are independent, what's the probability he'll sell over 2000 cups of coffee in a week? (0.069)
+
+Let C = # of cups of coffee sold
+let D = # of donuts sold
+C ~ N(320, 22)
+D ~ N(160, 16)
+
+C_Total = C_1 + C_2 + C_3 + C_4 + C_5 + C_6
+
+E[C_Total] = E[C_1 + ... C_6]
+
+E[C_Total] = 6 * 320 = 1920
+
+V[C_Total] = 6 * 22^2 = 
+
+C_Total ~ N(1920, sqrt(6) * 22)
+
+p(C_Total > 2000) = 1 - p(C_Total <= 2000) = 1 - pnorm(2000, 1920, sqrt(6) * 22)
+
+```{r}
+P <- 1 - pnorm(2000, 1920, sqrt(6) * 22)
+P
+```
+
+Coffee Problem pt.2:
+
+if he makes a profit of 50 cents on each cup of coffee and 40 cents on each doughnut, can he reasonably expect to have a day's profit of over $300? Explain. (No. $300 is more than 5 standard deviations above the mean.)
+
+What's the probability that on any given day he'll sell a doughnut to more than half of his coffee customers? (0.5)
+
+profit = 0.5C + 0.4D
+
+C ~ N(320, 22)
+D ~ N(160, 16)
+
+E(profit) = 0.50E(c) + 0.40E(d) = 0.50 * 320 + 0.40 * 160 = 224
+V(profit) = 0.50^2V(c) + 0.40V(D) = 0.50^2 * 22^2 + 0.40^2 * 16^2 = 
+SD(profit) = sqrt(V(profit)) = 12.73
+
+profit ~ N(224, 12.73)
+
+Pregnancies Problem: 
+
+Assume that the duration of human pregnancies can be described by a normal model with mean 265 days and standard deviation 15 days. Answer the following questions.
+
+What percentage of pregnancies should last between 275 and 290 days? (20.5%)
+
+At least how many days should the longest 20% of all pregnancies last? (277.6)
+
+PL ~ N(265, 15)
+
+P(275 <= PL <= 290) = P(P(PL <= 290) - P(PL <= 275))
+```{r}
+P <- pnorm(290, 265, 15) - pnorm(275, 265, 15)
+P
+P_1 <- qnorm(.80, 265, 15)
+P_1
+```
+
+Pregnancy Problem pt2:
+
+Suppose a certain obstetrician is currently providing prenatal care to 90 pregnant women. Let y¯ represent the mean length of their pregnancies. According to the central limit theorem, what is the mean and standard deviation SD(y¯) of the normal model of the distribution of the sample mean, y¯? The mean is (265). SD(y¯) = 1.58.
+
+What is the probability that the mean duration of these patients' pregnancies will be less than 267 days? (0.897)
+
+```{r}
+P <- 15 / sqrt(90)
+P
+P_1 <- pnorm(267, 265, 15)
+P_1
+```
+
+Create a function that finds the expected value, variance, standard deviation
+```{r}
+y <- c(110, -1890, -8890)
+py <- c(1 - (1/2083 + 1/495), 1/495, 1/2083)
+
+EVS <- function(x, px){
+EX <- sum(x*px)
+VX <- sum((x - EX)^2 * px)
+SX <- sqrt(VX)
+print(VX)
+print(EX)
+SX
+}
+
+P <- EVS(y, py)
+P
+```
+
+Question 2:
 
 
+```{r}
+
+```
