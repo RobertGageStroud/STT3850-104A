@@ -415,8 +415,78 @@ P
 ```
 
 Question 2:
+Confidence interval of qsec cars 
+
+```{r}
+CI <- mean(mtcars$qsec) + c(-1,1) * qt(.96,31) * sd(mtcars$qsec) / sqrt(32)
+CI
+
+t.test(mtcars$qsec, conf = .92)
+
+sims <- 10^4
+xbs <- numeric(sims)
+for (i in 1:sims){
+  bss <- sample(mtcars$qsec, 
+                size = sum(!is.na(mtcars$qsec)),
+                replace = TRUE)
+  xbs[i] <- mean(bss)
+}
+quantile(xbs, probs = c(.14, .96))
+```
+
+Review of phat values
+
+phat = the number of successes / the number of tries
+X ~ bin(n, p)
+Expcected value = the sum of x * px
+X ~ N(n*p, sqrt(n*p(1-p)))
+the Expected Value of phat is the probability. 
+the Variance of phat is p(1-p) / n 
+
+the Z score is phat - p / sqrt(p(1-p) / n)
+
+example. 40 success out of 50 tries with a hypothesis that .78 of people will vote. 
+
+an english statement about hypothesis has to be about the alternative hypothesis. 
+
+we fail to reject the null hypothesis - statistical conclusion
+There was insufficent evidence to suggest that the proportion of people voting is not equal to .78. - english conclusion 
 
 
 ```{r}
+phat <- rbinom(10000, 100, .8) / 100
+mean(phat)
 
+Zscore <- (.8 - .78) / sqrt((.8 * .2 )/ 50)
+Zscore
+pvalue <- 2*pnorm(.3535, lower = FALSE)
+pvalue
+prop.test(x = 40, n = 50, conf.level = 0.90, correct = FALSE)
+```
+Fundamental Question of Inference:
+
+how does what we observe in our data compare to the null hypothesis. 
+
+Expected countij = (row toal(i) - column total (j)) / total count
+```{r}
+library(tidyverse)
+library(PASWR2)
+
+numberSim <- 1000
+collection <- numeric(numberSim)
+for(int in 1:numberSim){
+  T1 <- xtabs(~pclass + sample(survived), data = TITANIC3)
+  collection[int] <- chisq.test(T1)$stat
+}
+chi_obs_stat <- chisq.test(xtabs(~pclass + survived, data = TITANIC3))$stat
+chi_obs_stat
+pValueTitanic <- ((sum(T1) >= chi_obs_stat) + 1) / (numberSim + 1)
+pValueTitanic
+ggplot(data = data.frame(x = collection), aes(x = collection)) + geom_histogram(binwidth = 5)
+```
+Same as above but using the infer package
+```{r}
+library(infer)
+inferTitanic <- TITANIC3 %>% specify(pclass ~ survived) %>% hypothesize(null = "independence") %>% generate(reps = 10^3 -1, type = "permute") %>% calculate(stat = "Chisq") 
+visualize(inferTitanic)
 ```

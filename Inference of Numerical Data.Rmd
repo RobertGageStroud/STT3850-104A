@@ -1,0 +1,56 @@
+---
+title: "DataCamp"
+author: "Robert Stroud"
+date: "10/24/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center", highlight = TRUE)
+```
+
+# Bootstrapping for estimating for a parameter
+
+##Generate bootstrap distribution for median
+
+When building a bootstrap distribution for a single statistic, we first generate a series of bootstrap resamples, and then record the relevant statistic (in this case, the median) of each distribution.
+
+In this exercise, the tidyverse packages, including ggplot2 have been loaded for you, as has infer.
+
+INSTRUCTIONS
+100 XP
+Fill in the blanks in the code to generate 15,000 bootstrap distributions of rent in the manhattan data frame and record the median of each bootstrap distribution.
+Save the resulting data frame of 15,000 bootstrap medians as rent_ci_med.
+View the str()-ucture of rent_ci_med to get a sense of what this object looks like.
+Visualize the bootstrap distribution of medians with a histogram of binwidth = 50, and describe the shape, center, and spread of the bootstrap distribution of medians.
+
+```{r}
+library(tidyverse, ggplot2, infer)
+manhattan <- read.csv("https://assets.datacamp.com/production/course_5103/datasets/manhattan.csv")
+
+# Generate bootstrap distribution of medians
+rent_ci_med <- manhattan %>%
+  # Specify the variable of interest
+  specify(response = rent) %>%  
+  # Generate 15000 bootstrap samples
+  generate(reps = 15000, type = "bootstrap") %>% 
+  # Calculate the median of each bootstrap sample
+  calculate(stat = "median")
+
+# View the structure of rent_ci_med
+str(rent_ci_med)
+
+# Plot a histogram of rent_ci_med
+ggplot(manhattan, aes(x = rent_ci_med)) +
+  geom_histogram()
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
